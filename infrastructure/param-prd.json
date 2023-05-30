@@ -1,0 +1,7 @@
+{
+  "Parameters": {
+    "AmiIdPar": "ami-0715c1897453cabd1",
+    "EnvironmentPar": "prd",
+    "HostedZonePar": "cmcloudlab0744.info"
+  }
+}

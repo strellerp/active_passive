@@ -1,0 +1,112 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  v0.1 | DB Systel | vaultwarden | Team ICO | securitygroup.yaml
+
+Parameters:
+  StackNamePar:
+    Description: Stackname
+    Type: String
+
+Resources:
+  Ec2SecurityGroup:  
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: EC2 securitygroup
+      GroupName: !Sub ${StackNamePar}-ec2-security-group
+      VpcId: !ImportValue VPC1-VPC-ID
+
+  Ec2SshInboundRule: 
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Inbound SSH traffic from everywhere
+      IpProtocol: tcp
+      FromPort: 22
+      ToPort: 22
+      CidrIp: 0.0.0.0/0
+      GroupId: !Ref Ec2SecurityGroup
+
+  Ec2HttpAllInboundRule:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Inbound HTTP traffic from ElbSecurityGroup
+      IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      CidrIp: 0.0.0.0/0
+      GroupId: !Ref Ec2SecurityGroup
+
+  Ec2HttpElbInboundRule:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Inbound HTTP traffic from ElbSecurityGroup
+      IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      SourceSecurityGroupId: !Ref ElbSecurityGroup
+      GroupId: !Ref Ec2SecurityGroup
+
+  Ec2AllInboundRule:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Inbound traffic from everywhere
+      IpProtocol: -1
+      FromPort: 0
+      ToPort: 0
+      CidrIp: 0.0.0.0/0
+      GroupId: !Ref Ec2SecurityGroup
+
+  Ec2AllOutboundRule:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      Description: Outbound all
+      IpProtocol: -1
+      FromPort: 0
+      ToPort: 0
+      CidrIp: 0.0.0.0/0
+      GroupId: !Ref Ec2SecurityGroup
+  
+  ##### ELB #####
+  ElbSecurityGroup:  
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: ELB securitygroup
+      GroupName: !Sub ${StackNamePar}-elb-security-group
+      VpcId: !ImportValue VPC1-VPC-ID
+  
+  ElbHttpsInboundRule: 
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Inbound HTTPS traffic from intranet
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: 0.0.0.0/0
+      GroupId: !Ref ElbSecurityGroup
+
+  ElbHttpInboundRule: 
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Inbound HTTPS traffic from intranet
+      IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      CidrIp: 0.0.0.0/0
+      GroupId: !Ref ElbSecurityGroup
+
+  ElbHttpOutboundRule:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      Description: Outbound HTTP traffic to service
+      IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      DestinationSecurityGroupId: !Ref Ec2SecurityGroup
+      GroupId: !Ref ElbSecurityGroup
+
+Outputs:
+  Ec2SecurityGroupIdOut:
+    Description: EC2 security group
+    Value: !Ref Ec2SecurityGroup
+  ElbSecurityGroupIdOut:
+    Description: ELB security group
+    Value: !Ref ElbSecurityGroup

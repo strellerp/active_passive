@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  v0.1 | Philipp | imports | import.yaml
+  ------------------------------------------------------------------------------
+
+Parameters:
+  VpcIdPar:
+    Type: String
+  Subnet1IdPar:
+    Type: String
+  Subnet2IdPar:
+    Type: String
+  Subnet3IdPar:
+    Type: String
+
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: philipp-2705-templates
+
+Outputs:
+  Vpc:
+    Value: !Ref VpcIdPar
+    Export:
+      Name: VPC1-VPC-ID
+  Subnet1:
+    Value: !Ref Subnet1IdPar
+    Export:
+      Name: VPC1-AZ1Subnet1
+  Subnet2:
+    Value: !Ref Subnet2IdPar
+    Export:
+      Name: VPC1-AZ2Subnet1
+  Subnet3:
+    Value: !Ref Subnet3IdPar
+    Export:
+      Name: VPC1-AZ3Subnet1
+

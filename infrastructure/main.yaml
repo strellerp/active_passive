@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  v0.1 | Philipp | test-stack | main.yaml
+  ------------------------------------------------------------------------------
+
+Parameters:
+  AmiIdPar:
+    Type: String
+  EnvironmentPar:
+    Type: String
+  HostedZonePar:
+    Type: String
+
+Resources:
+  test1:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: resources/ec2.yaml
+      Parameters:
+        AmiIdPar: !Ref AmiIdPar
+        StackNamePar: !Ref AWS::StackName
+        HostedZonePar: !Ref HostedZonePar
+        Ec2SecurityGroupIdPar: !GetAtt SecurityGroups.Outputs.Ec2SecurityGroupIdOut
+        NamePar: test-ec2-1
+        SubnetIdPar: !ImportValue VPC1-AZ1Subnet1
+
+
+  test2:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: resources/ec2.yaml
+      Parameters:
+        AmiIdPar: !Ref AmiIdPar
+        StackNamePar: !Ref AWS::StackName
+        HostedZonePar: !Ref HostedZonePar
+        Ec2SecurityGroupIdPar: !GetAtt SecurityGroups.Outputs.Ec2SecurityGroupIdOut
+        NamePar: test-ec2-2
+        SubnetIdPar: !ImportValue VPC1-AZ2Subnet1
+
+  Elb:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: resources/elb_active_passive.yaml
+      Parameters:
+        Ec2SecurityGroupIdPar: !GetAtt SecurityGroups.Outputs.Ec2SecurityGroupIdOut
+        ElbSecurityGroupIdPar: !GetAtt SecurityGroups.Outputs.ElbSecurityGroupIdOut
+        HostedZonePar: !Ref HostedZonePar
+        NamePar: test-elb
+        PrimaryInstanceIdPar: !GetAtt test1.Outputs.Ec2InstanceIdOut
+        PrimaryInstanceIpPar: !GetAtt test1.Outputs.Ec2PrivateIpOut
+        SecondaryInstanceIdPar: !GetAtt test2.Outputs.Ec2InstanceIdOut
+        StackNamePar: !Ref AWS::StackName
+  Iam:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: resources/iam.yaml
+      Parameters:
+        StackNamePar: !Ref AWS::StackName
+  
+  SecurityGroups:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: resources/securitygroups.yaml
+      Parameters:
+        StackNamePar: !Ref AWS::StackName

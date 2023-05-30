@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  v0.1 | Philipp | test-stack | iam.yaml
+  ------------------------------------------------------------------------------
+
+Parameters:
+  StackNamePar:
+    Description: Stackname
+    Type: String
+
+Resources:
+  Ec2IamRole:
+    Type: AWS::IAM::Role
+    Properties: 
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Description: EC2 role
+      RoleName: !Sub ${StackNamePar}-ec2-role
+
+Outputs:
+  Ec2IamRoleArnOut:
+    Description: Arn of the task ec2 role
+    Value: !Ref Ec2IamRole
+

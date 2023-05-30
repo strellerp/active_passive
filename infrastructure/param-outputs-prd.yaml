@@ -1,0 +1,8 @@
+{
+  "Parameters": {
+    "VpcIdPar": "vpc-051dbcf35b974a939",
+    "Subnet1IdPar": "subnet-0f8aec17d4cfe65b4",
+    "Subnet2IdPar": "subnet-0cd0d69368f408a9e",
+    "Subnet3IdPar": "subnet-03732e014ba694911"
+  }
+}

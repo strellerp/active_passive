@@ -1,0 +1,19 @@
+INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
+WARNING:root:Active instance is registered and healthy.
+INFO:root:Nothing to do.
+INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
+WARNING:root:Active instance is registered but not healthy. unhealthy
+WARNING:root:Passive instance unused. Registering...
+INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
+WARNING:root:Active instance is registered but not healthy. unhealthy
+WARNING:root:Passive instance unused. Registering...
+INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
+WARNING:root:Active instance is registered but not healthy. unhealthy
+INFO:root:Passive instance is initial. Nothing to do right now.
+INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
+WARNING:root:Active instance is registered but not healthy. unhealthy
+WARNING:root:Passive instance is registered and healthy. Active instance is unhealthy. Deregistering active instance...
+INFO:root:Passive instance is healthy. Nothing to do right now.
+INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
+WARNING:root:Active instance is registered but not healthy. draining
+INFO:root:Passive instance is healthy. Nothing to do right now.

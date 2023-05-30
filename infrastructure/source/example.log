@@ -1,0 +1,101 @@
+DEBUG:botocore.hooks:Changing event name from creating-client-class.iot-data to creating-client-class.iot-data-plane
+DEBUG:botocore.hooks:Changing event name from before-call.apigateway to before-call.api-gateway
+DEBUG:botocore.hooks:Changing event name from request-created.machinelearning.Predict to request-created.machine-learning.Predict
+DEBUG:botocore.hooks:Changing event name from before-parameter-build.autoscaling.CreateLaunchConfiguration to before-parameter-build.auto-scaling.CreateLaunchConfiguration
+DEBUG:botocore.hooks:Changing event name from before-parameter-build.route53 to before-parameter-build.route-53
+DEBUG:botocore.hooks:Changing event name from request-created.cloudsearchdomain.Search to request-created.cloudsearch-domain.Search
+DEBUG:botocore.hooks:Changing event name from docs.*.autoscaling.CreateLaunchConfiguration.complete-section to docs.*.auto-scaling.CreateLaunchConfiguration.complete-section
+DEBUG:botocore.hooks:Changing event name from before-parameter-build.logs.CreateExportTask to before-parameter-build.cloudwatch-logs.CreateExportTask
+DEBUG:botocore.hooks:Changing event name from docs.*.logs.CreateExportTask.complete-section to docs.*.cloudwatch-logs.CreateExportTask.complete-section
+DEBUG:botocore.hooks:Changing event name from before-parameter-build.cloudsearchdomain.Search to before-parameter-build.cloudsearch-domain.Search
+DEBUG:botocore.hooks:Changing event name from docs.*.cloudsearchdomain.Search.complete-section to docs.*.cloudsearch-domain.Search.complete-section
+DEBUG:botocore.utils:IMDS ENDPOINT: http://169.254.169.254/
+DEBUG:botocore.credentials:Looking for credentials via: env
+DEBUG:botocore.credentials:Looking for credentials via: assume-role
+DEBUG:botocore.credentials:Looking for credentials via: assume-role-with-web-identity
+DEBUG:botocore.credentials:Looking for credentials via: sso
+DEBUG:botocore.credentials:Looking for credentials via: shared-credentials-file
+INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
+DEBUG:botocore.loaders:Loading JSON file: /opt/homebrew/lib/python3.11/site-packages/botocore/data/endpoints.json
+DEBUG:botocore.loaders:Loading JSON file: /opt/homebrew/lib/python3.11/site-packages/botocore/data/sdk-default-configuration.json
+DEBUG:botocore.hooks:Event choose-service-name: calling handler <function handle_service_name_alias at 0x106398ea0>
+DEBUG:botocore.loaders:Loading JSON file: /opt/homebrew/lib/python3.11/site-packages/botocore/data/elbv2/2015-12-01/service-2.json
+DEBUG:botocore.loaders:Loading JSON file: /opt/homebrew/lib/python3.11/site-packages/botocore/data/elbv2/2015-12-01/endpoint-rule-set-1.json.gz
+DEBUG:botocore.loaders:Loading JSON file: /opt/homebrew/lib/python3.11/site-packages/botocore/data/partitions.json
+DEBUG:botocore.hooks:Event creating-client-class.elastic-load-balancing-v2: calling handler <function add_generate_presigned_url at 0x106310720>
+DEBUG:botocore.endpoint:Setting elasticloadbalancing timeout as (60, 60)
+DEBUG:botocore.loaders:Loading JSON file: /opt/homebrew/lib/python3.11/site-packages/botocore/data/_retry.json
+DEBUG:botocore.client:Registering retry handlers for service: elbv2
+DEBUG:botocore.regions:Calling endpoint provider with parameters: {'Region': 'us-east-1', 'UseDualStack': False, 'UseFIPS': False}
+DEBUG:botocore.regions:Endpoint provider result: https://elasticloadbalancing.us-east-1.amazonaws.com
+DEBUG:botocore.hooks:Event before-parameter-build.elastic-load-balancing-v2.DescribeTargetHealth: calling handler <function generate_idempotent_uuid at 0x1063def20>
+DEBUG:botocore.hooks:Event before-call.elastic-load-balancing-v2.DescribeTargetHealth: calling handler <function add_recursion_detection_header at 0x1063dd760>
+DEBUG:botocore.hooks:Event before-call.elastic-load-balancing-v2.DescribeTargetHealth: calling handler <function inject_api_version_header_if_needed at 0x106408a40>
+DEBUG:botocore.endpoint:Making request for OperationModel(name=DescribeTargetHealth) with params: {'url_path': '/', 'query_string': '', 'method': 'POST', 'headers': {'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8', 'User-Agent': 'Boto3/1.26.130 Python/3.11.3 Darwin/22.4.0 Botocore/1.29.130'}, 'body': {'Action': 'DescribeTargetHealth', 'Version': '2015-12-01', 'TargetGroupArn': 'arn:aws:elasticloadbalancing:us-east-1:648106300517:targetgroup/test-prd-tg/b59bc5b874d33a9b', 'Targets.member.1.Id': 'i-064a146681f1096ee', 'Targets.member.1.Port': 80}, 'url': 'https://elasticloadbalancing.us-east-1.amazonaws.com/', 'context': {'client_region': 'us-east-1', 'client_config': <botocore.config.Config object at 0x106a9b450>, 'has_streaming_input': False, 'auth_type': None}}
+DEBUG:botocore.hooks:Event request-created.elastic-load-balancing-v2.DescribeTargetHealth: calling handler <bound method RequestSigner.handler of <botocore.signers.RequestSigner object at 0x106a9b410>>
+DEBUG:botocore.hooks:Event choose-signer.elastic-load-balancing-v2.DescribeTargetHealth: calling handler <function set_operation_specific_signer at 0x1063dede0>
+DEBUG:botocore.auth:Calculating signature using v4 auth.
+DEBUG:botocore.auth:CanonicalRequest:
+POST
+/
+
+content-type:application/x-www-form-urlencoded; charset=utf-8
+host:elasticloadbalancing.us-east-1.amazonaws.com
+x-amz-date:20230529T163024Z
+
+content-type;host;x-amz-date
+2363e54a18d4c698fc9be2ce45e76a3af62546091be48a87945d433b5c1f2673
+DEBUG:botocore.auth:StringToSign:
+AWS4-HMAC-SHA256
+20230529T163024Z
+20230529/us-east-1/elasticloadbalancing/aws4_request
+742986c3cd5a1c3309230f5f9529b2ee84989650447330b2ab118500886ce3af
+DEBUG:botocore.auth:Signature:
+ce9862c07038ce604b58eb336b6bb31de1cf076679ea6523f12a700f9261b411
+DEBUG:botocore.hooks:Event request-created.elastic-load-balancing-v2.DescribeTargetHealth: calling handler <function add_retry_headers at 0x1064091c0>
+DEBUG:botocore.endpoint:Sending http request: <AWSPreparedRequest stream_output=False, method=POST, url=https://elasticloadbalancing.us-east-1.amazonaws.com/, headers={'Content-Type': b'application/x-www-form-urlencoded; charset=utf-8', 'User-Agent': b'Boto3/1.26.130 Python/3.11.3 Darwin/22.4.0 Botocore/1.29.130', 'X-Amz-Date': b'20230529T163024Z', 'Authorization': b'AWS4-HMAC-SHA256 Credential=AKIAZNZRFKRS5V5YRRYP/20230529/us-east-1/elasticloadbalancing/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=ce9862c07038ce604b58eb336b6bb31de1cf076679ea6523f12a700f9261b411', 'amz-sdk-invocation-id': b'04f0e89a-6484-47f7-9dff-6cbd335a29c3', 'amz-sdk-request': b'attempt=1', 'Content-Length': '233'}>
+DEBUG:botocore.httpsession:Certificate path: /opt/homebrew/lib/python3.11/site-packages/botocore/cacert.pem
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): elasticloadbalancing.us-east-1.amazonaws.com:443
+DEBUG:urllib3.connectionpool:https://elasticloadbalancing.us-east-1.amazonaws.com:443 "POST / HTTP/1.1" 200 619
+DEBUG:botocore.parsers:Response headers: {'x-amzn-RequestId': 'f5692ebb-025b-4ad1-b05a-a0384b94891f', 'Content-Type': 'text/xml', 'Content-Length': '619', 'Date': 'Mon, 29 May 2023 16:30:24 GMT'}
+DEBUG:botocore.parsers:Response body:
+b'<DescribeTargetHealthResponse xmlns="http://elasticloadbalancing.amazonaws.com/doc/2015-12-01/">\n  <DescribeTargetHealthResult>\n    <TargetHealthDescriptions>\n      <member>\n        <HealthCheckPort>80</HealthCheckPort>\n        <TargetHealth>\n          <State>healthy</State>\n        </TargetHealth>\n        <Target>\n          <Id>i-064a146681f1096ee</Id>\n          <Port>80</Port>\n        </Target>\n      </member>\n    </TargetHealthDescriptions>\n  </DescribeTargetHealthResult>\n  <ResponseMetadata>\n    <RequestId>f5692ebb-025b-4ad1-b05a-a0384b94891f</RequestId>\n  </ResponseMetadata>\n</DescribeTargetHealthResponse>\n'
+DEBUG:botocore.hooks:Event needs-retry.elastic-load-balancing-v2.DescribeTargetHealth: calling handler <botocore.retryhandler.RetryHandler object at 0x106a8c4d0>
+DEBUG:botocore.retryhandler:No retry needed.
+DEBUG:botocore.regions:Calling endpoint provider with parameters: {'Region': 'us-east-1', 'UseDualStack': False, 'UseFIPS': False}
+DEBUG:botocore.regions:Endpoint provider result: https://elasticloadbalancing.us-east-1.amazonaws.com
+DEBUG:botocore.hooks:Event before-parameter-build.elastic-load-balancing-v2.DescribeTargetHealth: calling handler <function generate_idempotent_uuid at 0x1063def20>
+DEBUG:botocore.hooks:Event before-call.elastic-load-balancing-v2.DescribeTargetHealth: calling handler <function add_recursion_detection_header at 0x1063dd760>
+DEBUG:botocore.hooks:Event before-call.elastic-load-balancing-v2.DescribeTargetHealth: calling handler <function inject_api_version_header_if_needed at 0x106408a40>
+DEBUG:botocore.endpoint:Making request for OperationModel(name=DescribeTargetHealth) with params: {'url_path': '/', 'query_string': '', 'method': 'POST', 'headers': {'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8', 'User-Agent': 'Boto3/1.26.130 Python/3.11.3 Darwin/22.4.0 Botocore/1.29.130'}, 'body': {'Action': 'DescribeTargetHealth', 'Version': '2015-12-01', 'TargetGroupArn': 'arn:aws:elasticloadbalancing:us-east-1:648106300517:targetgroup/test-prd-tg/b59bc5b874d33a9b', 'Targets.member.1.Id': 'i-0765d9593b43effb4', 'Targets.member.1.Port': 80}, 'url': 'https://elasticloadbalancing.us-east-1.amazonaws.com/', 'context': {'client_region': 'us-east-1', 'client_config': <botocore.config.Config object at 0x106a9b450>, 'has_streaming_input': False, 'auth_type': None}}
+DEBUG:botocore.hooks:Event request-created.elastic-load-balancing-v2.DescribeTargetHealth: calling handler <bound method RequestSigner.handler of <botocore.signers.RequestSigner object at 0x106a9b410>>
+DEBUG:botocore.hooks:Event choose-signer.elastic-load-balancing-v2.DescribeTargetHealth: calling handler <function set_operation_specific_signer at 0x1063dede0>
+DEBUG:botocore.auth:Calculating signature using v4 auth.
+DEBUG:botocore.auth:CanonicalRequest:
+POST
+/
+
+content-type:application/x-www-form-urlencoded; charset=utf-8
+host:elasticloadbalancing.us-east-1.amazonaws.com
+x-amz-date:20230529T163024Z
+
+content-type;host;x-amz-date
+764b8b6aac1d78c149a668a92bd6484e2d9500edd8355d6d89f7c4066f68feee
+DEBUG:botocore.auth:StringToSign:
+AWS4-HMAC-SHA256
+20230529T163024Z
+20230529/us-east-1/elasticloadbalancing/aws4_request
+597c5f20810d1c39a21ca848ea7859e9f80388f96141d9ccd85700ed58c3d4a2
+DEBUG:botocore.auth:Signature:
+c6a79606e1570da944d878aad4cfb8b9cd8d0fd809abd81f72275af25cef4f49
+DEBUG:botocore.hooks:Event request-created.elastic-load-balancing-v2.DescribeTargetHealth: calling handler <function add_retry_headers at 0x1064091c0>
+DEBUG:botocore.endpoint:Sending http request: <AWSPreparedRequest stream_output=False, method=POST, url=https://elasticloadbalancing.us-east-1.amazonaws.com/, headers={'Content-Type': b'application/x-www-form-urlencoded; charset=utf-8', 'User-Agent': b'Boto3/1.26.130 Python/3.11.3 Darwin/22.4.0 Botocore/1.29.130', 'X-Amz-Date': b'20230529T163024Z', 'Authorization': b'AWS4-HMAC-SHA256 Credential=AKIAZNZRFKRS5V5YRRYP/20230529/us-east-1/elasticloadbalancing/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=c6a79606e1570da944d878aad4cfb8b9cd8d0fd809abd81f72275af25cef4f49', 'amz-sdk-invocation-id': b'c638da35-9961-48c4-9103-9fe23be36a4e', 'amz-sdk-request': b'attempt=1', 'Content-Length': '233'}>
+DEBUG:botocore.httpsession:Certificate path: /opt/homebrew/lib/python3.11/site-packages/botocore/cacert.pem
+DEBUG:urllib3.connectionpool:https://elasticloadbalancing.us-east-1.amazonaws.com:443 "POST / HTTP/1.1" 200 753
+DEBUG:botocore.parsers:Response headers: {'x-amzn-RequestId': '3bfb800d-1b34-4520-96f5-6710b35435c0', 'Content-Type': 'text/xml', 'Content-Length': '753', 'Date': 'Mon, 29 May 2023 16:30:24 GMT'}
+DEBUG:botocore.parsers:Response body:
+b'<DescribeTargetHealthResponse xmlns="http://elasticloadbalancing.amazonaws.com/doc/2015-12-01/">\n  <DescribeTargetHealthResult>\n    <TargetHealthDescriptions>\n      <member>\n        <HealthCheckPort>80</HealthCheckPort>\n        <TargetHealth>\n          <Reason>Target.DeregistrationInProgress</Reason>\n          <Description>Target deregistration is in progress</Description>\n          <State>draining</State>\n        </TargetHealth>\n        <Target>\n          <Id>i-0765d9593b43effb4</Id>\n          <Port>80</Port>\n        </Target>\n      </member>\n    </TargetHealthDescriptions>\n  </DescribeTargetHealthResult>\n  <ResponseMetadata>\n    <RequestId>3bfb800d-1b34-4520-96f5-6710b35435c0</RequestId>\n  </ResponseMetadata>\n</DescribeTargetHealthResponse>\n'
+DEBUG:botocore.hooks:Event needs-retry.elastic-load-balancing-v2.DescribeTargetHealth: calling handler <botocore.retryhandler.RetryHandler object at 0x106a8c4d0>
+DEBUG:botocore.retryhandler:No retry needed.
+WARNING:root:Active instance is registered and healthy.
+INFO:root:Nothing to do.

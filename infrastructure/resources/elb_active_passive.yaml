@@ -1,0 +1,248 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  v0.1 | Philipp | test-stack | elb_active_passive.yaml
+
+Parameters:
+  PrimaryInstanceIdPar:
+    Type: String
+  PrimaryInstanceIpPar:
+    Type: String
+  Ec2SecurityGroupIdPar:
+    Type: String
+  ElbSecurityGroupIdPar:
+    Type: String
+  HostedZonePar:
+    Type: String
+  NamePar:
+    Type: String
+  SecondaryInstanceIdPar:
+    Type: String
+  StackNamePar:
+    Type: String
+ 
+Resources: 
+  Elb:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Scheme: internal
+      SecurityGroups: 
+        - !Ref ElbSecurityGroupIdPar
+      Subnets:
+        - !ImportValue VPC1-AZ1Subnet1
+        - !ImportValue VPC1-AZ2Subnet1
+        - !ImportValue VPC1-AZ3Subnet1
+
+  HttpsListener: 
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties: 
+      Certificates: 
+        - CertificateArn: !Ref Certificate
+      DefaultActions: 
+        - TargetGroupArn: !Ref TargetGroup
+          Type: forward
+      LoadBalancerArn: !Ref Elb
+      Port: 443
+      Protocol: HTTPS
+      SslPolicy: ELBSecurityPolicy-TLS-1-2-Ext-2018-06 
+
+  HttpListener: 
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties: 
+      DefaultActions: 
+        - RedirectConfig:
+            Host: "#{host}"
+            Path: "/#{path}"
+            Port: 443
+            Protocol: "HTTPS"
+            Query: "#{query}"
+            StatusCode: "HTTP_301"
+          Type: redirect
+      LoadBalancerArn: !Ref Elb
+      Port: 80
+      Protocol: HTTP
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties: 
+      Name: !Sub ${StackNamePar}-tg
+      Port: 80
+      Protocol: HTTP
+      TargetGroupAttributes:
+        - Key: "stickiness.enabled"
+          Value: "false"
+      Targets:
+        - Id: !Ref PrimaryInstanceIdPar
+          Port: 80
+      TargetType: instance
+      VpcId: !ImportValue VPC1-VPC-ID
+
+  Dns:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Sub ${HostedZonePar}.
+      Name: !Sub ${NamePar}.${HostedZonePar}
+      ResourceRecords:
+        - !GetAtt Elb.DNSName
+      TTL: 90
+      Type: CNAME
+
+  Certificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties: 
+      DomainName: !Sub elb.${HostedZonePar}
+      DomainValidationOptions: 
+        - DomainName: !Sub elb.${HostedZonePar}
+          ValidationDomain: !Ref HostedZonePar 
+      ValidationMethod: DNS
+
+  WatcherLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: !Sub |
+          import boto3
+          import logging
+          from botocore.vendored import requests
+
+          client = boto3.client('elbv2')
+
+          TARGET_GROUP_ARN: str = "${TargetGroup}"
+          PRIMARY_INSTANCE_ID: str = "${PrimaryInstanceIdPar}"
+          PRIMARY_INSTANCE_IP: str = "${PrimaryInstanceIpPar}"
+          HEALTH_CHECK_PATH: str = ""
+          HTTP_SUCCESS_CODES: list[int] = [ 200 ]
+          SECONDARY_INSTANCE_ID: str = "${SecondaryInstanceIdPar}"
+
+          def check_instance_health(instance_id: str, port: int = 80) -> str:
+            response: dict = client.describe_target_health(
+              TargetGroupArn = TARGET_GROUP_ARN,
+              Targets = [{
+                'Id': instance_id,
+                'Port': port,
+              }]
+            )
+            instance_health: str = response["TargetHealthDescriptions"][0]["TargetHealth"]["State"]
+            return instance_health
+
+          def register(instance_id: str, port: int = 80) -> None:
+            logging.warning(f"Registering {instance_id}")
+            client.register_targets(
+              TargetGroupArn = TARGET_GROUP_ARN,
+              Targets=[{
+                'Id': instance_id,
+                'Port': port,
+              }]
+            )
+
+          def deregister(instance_id: str, port: int = 80) -> None:
+            logging.warning(f"Deregistering {instance_id}...")
+            client.deregister_targets(
+              TargetGroupArn = TARGET_GROUP_ARN,
+              Targets = [{
+                'Id': instance_id,
+                'Port': port,
+              }]
+            )
+
+          def lambda_handler(event, context) -> None:
+
+            logging.warning(f"Primary instance ID: {PRIMARY_INSTANCE_ID}")
+            logging.warning(f"Secondary instance ID: {SECONDARY_INSTANCE_ID}")
+            
+            primary_instance_health: str = check_instance_health(PRIMARY_INSTANCE_ID)
+            secondary_instance_health: str = check_instance_health(SECONDARY_INSTANCE_ID)
+            logging.warning(f"Current instance state [primary|secondary]: [{primary_instance_health}|{secondary_instance_health}]")
+
+            if primary_instance_health == "healthy":
+              if secondary_instance_health in ["healthy", "unhealthy"]: # healthy || unhealthy => registered
+                deregister(SECONDARY_INSTANCE_ID)
+              else:
+                logging.warning("Nothing to do.")
+            else:
+              if secondary_instance_health == "unused":
+                register(SECONDARY_INSTANCE_ID)
+              elif passive_instance_health == "healthy" and active_instance_health == "unhealthy":
+                deregister(ACTIVE_INSTANCE_ID)
+              else:
+                logging.warning("Checking primary instance health...")
+                try:
+                  status_code: str = requests.get(f"http://{PRIMARY_INSTANCE_IP}/{HEALTH_CHECK_PATH}", timeout=3).status_code
+                  if status_code in [ HTTP_SUCCESS_CODES ]:
+                    logging.warning("Primary instance is healthy again.")
+                    register(PRIMARY_INSTANCE_ID)
+                  else:
+                    logging.warning(f"Primary instance returned status code {status_code} and is not yet healthy again. Nothing to do.")
+                except:
+                  logging.warning(f"Primary instance could not be reached. Nothing to do.")
+      Handler: index.lambda_handler
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Runtime: python3.10
+      Timeout: 10
+      VpcConfig:
+        SecurityGroupIds: [ !Ref LambdaFunctionSecurityGroup ]
+        SubnetIds:
+          - !ImportValue VPC1-AZ1Subnet1
+          - !ImportValue VPC1-AZ2Subnet1
+          - !ImportValue VPC1-AZ3Subnet1
+
+  LambdaFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Description: Watcher lambda role
+      RoleName: !Sub ${StackNamePar}-watcher-lambda-role
+
+  LambdaFunctionPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - elasticloadbalancing:RegisterTargets
+              - elasticloadbalancing:DeregisterTargets
+            Resource: !Ref TargetGroup
+          - Effect: Allow
+            Action:
+              - ec2:CreateNetworkInterface
+              - ec2:DescribeNetworkInterfaces
+              - ec2:DeleteNetworkInterface
+              - ec2:DescribeInstances
+              - ec2:AttachNetworkInterface
+            Resource: "*"
+      PolicyName: AllowRegisterDeregisterTargetGroup
+      Roles: 
+        - !Ref LambdaFunctionRole
+
+  LambdaFunctionSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Lambda security group
+      SecurityGroupEgress: 
+        Description: Outbound traffic to EC2 instances
+        IpProtocol: -1
+        FromPort: 0
+        ToPort: 0
+        # DestinationSecurityGroupId: !Ref Ec2SecurityGroupIdPar
+        CidrIp: 0.0.0.0/0
+      SecurityGroupIngress:
+        Description: test-stack
+        IpProtocol: -1
+        FromPort: 0
+        ToPort: 0
+        CidrIp: 0.0.0.0/0
+      VpcId: !ImportValue VPC1-VPC-ID
+
+Outputs:
+  TargetGroupArnOut:
+    Description: Arn of the target group
+    Value: !Ref TargetGroup

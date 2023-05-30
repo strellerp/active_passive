@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  v0.1 | DB Systel | test-stack | Team ICO | ec2.yaml
+
+Parameters:
+  AmiIdPar:
+    Type: String
+  Ec2SecurityGroupIdPar:
+    Type: String
+  StackNamePar:
+    Type: String
+  HostedZonePar:
+    Type: String
+  NamePar:
+    Type: String
+  SubnetIdPar:
+    Type: String
+
+Resources: 
+  
+  Ec2KeyPair:
+    Type: AWS::EC2::KeyPair
+    Properties:
+      KeyName: !Ref AWS::StackName
+      PublicKeyMaterial: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFPLON5cwUcVIzDvQ4Br7YXZC9YFMQn3ZcxDoD1frPBA philipp@philipp-mbp"
+
+  Ec2:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AmiIdPar
+      InstanceType: "t3.small"
+      KeyName: !Ref Ec2KeyPair
+      Tags:
+        - Key: "Name"
+          Value: !Ref NamePar
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          GroupSet:
+            - !Ref Ec2SecurityGroupIdPar
+          SubnetId: !Ref SubnetIdPar 
+
+  Dns:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Sub ${HostedZonePar}.
+      Name: !Sub ${NamePar}.${HostedZonePar}
+      ResourceRecords:
+        - !GetAtt Ec2.PublicIp
+      TTL: 90
+      Type: A
+
+Outputs:
+  Ec2PrivateIpOut:
+    Description: Instance private IP
+    Value: !GetAtt Ec2.PrivateIp
+  Ec2PublicIpOut:
+    Description: Instance public IP
+    Value: !GetAtt Ec2.PublicIp
+  Ec2InstanceIdOut:
+    Description: Instance ID
+    Value: !Ref Ec2
